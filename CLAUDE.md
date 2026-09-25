@@ -12,6 +12,7 @@
 - 🎫 スタンプ: 20個でカード完成（15%でキラキラ）。印刷・画像保存。「○こ 🔍」を押すと全スタンプを番号つきで一覧
 - ⚙️ 大人の方へ（右上の歯車）: 使い方の説明、お子さんの名前（あいさつ・お祝いで呼びかけ）、ゲームのレベル（自動＝スタンプ数 0/10/30/60 で1〜4、または手動1〜5。5は「ー・ッ・ャュョ」入りの言葉 WORDS_SP で手動のみ）、まちがえやすい字と5問ごとのまちがい回数の記録、こえ／おんがく の音量、スタンプを押す／減らす／全部消す、引っ越しコード（KTKN1:）
 - 記録はブラウザの localStorage（katakana_stamps / katakana_cards / katakana_slots、音量は katakana_volume、レベル設定は katakana_level、名前は katakana_name、まちがい記録は katakana_stats / katakana_history）。**キー名とコード形式は変えない**（子供の記録が消える）
+- つかう人（3人）: ⚙️ で 1ばん／2ばん／ゲスト を切り替え（katakana_profile）。1ばんは上のキー名そのまま、2ばん・3ばんは各キーの後ろに `_p2` / `_p3` を付けて別保存（`PK()` を通す）。音量だけは共通
 
 ## 声
 - speechSynthesis を使用。`voiceScore()` で自然な声を優先（Natural/Nanami > Google > Kyoko拡張 > その他 > 旧Microsoft）
