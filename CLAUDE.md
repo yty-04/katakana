@@ -10,8 +10,8 @@
 - 📖 アイウエオ: 50音表（ぜんぶ／おおきく）。押すと読み上げ
 - 🚂 ゲーム: もんだい／れんしゅう。5問正解でお祝い（電車）→スタンプ ゲット→メニュー。ゲーム中はオルゴール風 BGM（手作り・お祝い中は止まる）
 - 🎫 スタンプ: 20個でカード完成（15%でキラキラ）。印刷・画像保存
-- ⚙️ 大人の方へ（右上の歯車。足し算に答えると開く）: こえ／おんがく の音量、スタンプを押す／減らす／全部消す、引っ越しコード（KTKN1:）
-- 記録はブラウザの localStorage（katakana_stamps / katakana_cards / katakana_slots、音量は katakana_volume）。**キー名とコード形式は変えない**（子供の記録が消える）
+- ⚙️ 大人の方へ（右上の歯車。足し算に答えると開く）: 使い方の説明、ゲームのレベル（自動＝スタンプ数 0/10/30/60 で1〜4、または手動）、こえ／おんがく の音量、スタンプを押す／減らす／全部消す、引っ越しコード（KTKN1:）
+- 記録はブラウザの localStorage（katakana_stamps / katakana_cards / katakana_slots、音量は katakana_volume、レベル設定は katakana_level）。**キー名とコード形式は変えない**（子供の記録が消える）
 
 ## 声
 - speechSynthesis を使用。`voiceScore()` で自然な声を優先（Natural/Nanami > Google > Kyoko拡張 > その他 > 旧Microsoft）
