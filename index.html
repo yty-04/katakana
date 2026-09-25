@@ -1944,7 +1944,53 @@ b.addEventListener("click", function(){ check(b, k, answer); });
 box.appendChild(b);
 });
 if(practice) glowAnswer(answer);
+idleNewStep();
 }
+// 悩んでいる間の はげまし（しばらく押さないと、声かけ → ヒント → 答えを光らせる）
+var CHEER_WAIT = ["あわてなくて いいよ", "どれかな〜？", "だいじょうぶ、できるよ", "いっしょに さがそうね", "がんばってるね"];
+var IDLE_MS = [12000, 12000, 15000];
+var idleTimer = null, idleLevel = 0;
+function idleArm(delay){
+if(idleTimer) clearTimeout(idleTimer);
+idleTimer = null;
+if(idleLevel >= IDLE_MS.length) return;
+if(practice && idleLevel >= 2) return;
+idleTimer = setTimeout(idleFire, delay || IDLE_MS[idleLevel]);
+}
+function idleNewStep(){
+idleLevel = 0;
+idleArm();
+}
+function idleActive(){
+return !document.hidden && !locked && word && step < word.length &&
+$("p-game").classList.contains("on") &&
+!$("celebrate").classList.contains("on");
+}
+function idleFire(){
+idleTimer = null;
+if(!idleActive()){ idleArm(5000); return; }
+var ch = word.charAt(step);
+var rd = READ[ch] || ch;
+var lv = idleLevel++;
+if(lv === 0){
+var c = pick(CHEER_WAIT);
+$("toast").textContent = c;
+sayLines([
+{ t:c,    at:0,    rate:0.9, pitch:1.35 },
+{ t:word, at:1700, rate:WORD_RATE, pitch:1.2 }
+]);
+} else if(lv === 1 && !practice){
+if(misses < 1){ misses = 1; drawSlots(); }
+$("toast").textContent = "ヒント だよ";
+sayLines([{ t:"ヒントだよ。" + rd + " を さがしてね", at:0, rate:0.85, pitch:1.35 }]);
+} else {
+glowAnswer(ch);
+$("toast").textContent = "ひかってる じを おしてみてね";
+sayLines([{ t:"ひかってる じ、おしてみてね", at:0, rate:0.9, pitch:1.35 }]);
+}
+idleArm();
+}
+document.addEventListener("pointerdown", function(){ if(idleTimer) idleArm(); });
 function check(btn, k, answer){
 if(locked) return;
 audio();
