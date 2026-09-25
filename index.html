@@ -571,10 +571,100 @@ $("soundBtn").textContent = label;  $("soundBtn").className = cls;
 $("soundBtn2").textContent = label; $("soundBtn2").className = cls;
 if(soundOn){ audio(); dingdong(); }
 else if(canSpeak){ try{ window.speechSynthesis.cancel(); }catch(e){} }
+bgmUpdate();
 });
 }
 bindSound($("soundBtn"));
 bindSound($("soundBtn2"));
+// ゲーム中の BGM（オルゴール風。手作りの音なのでファイル不要）
+// 大きさは BGM_VOL で変える（0 で消える）
+var BGM_VOL = 0.08;
+var BGM_STEP = 0.28;
+var BGM_LEN = 64;
+var BGM_MEL = [
+[0,76,2],[2,79,2],[4,81,1],[5,79,1],[6,76,2],
+[8,72,2],[10,76,2],[12,74,2],[14,72,2],
+[16,81,2],[18,81,1],[19,79,1],[20,77,2],[22,81,2],
+[24,79,4],[28,74,4],
+[32,76,1],[33,79,1],[34,84,2],[36,83,2],[38,79,2],
+[40,81,2],[42,79,1],[43,76,3],[46,72,2],
+[48,77,2],[50,81,2],[52,79,2],[54,71,2],
+[56,72,4]
+];
+var BGM_BASS = [
+[0,48],[4,55],[8,45],[12,52],[16,41],[20,48],[24,43],[28,50],
+[32,48],[36,55],[40,45],[44,52],[48,41],[52,43],[56,48],[60,43]
+];
+var bgmOn = false, bgmTimer = null, bgmGain = null, bgmNext = 0, bgmStep = 0;
+function bgmNote(a, midi, t, len, vol, type){
+var f = 440 * Math.pow(2, (midi - 69) / 12);
+var osc = a.createOscillator();
+var g = a.createGain();
+osc.type = type;
+osc.frequency.setValueAtTime(f, t);
+g.gain.setValueAtTime(0, t);
+g.gain.linearRampToValueAtTime(vol, t + 0.01);
+g.gain.exponentialRampToValueAtTime(0.0001, t + len);
+osc.connect(g); g.connect(bgmGain);
+osc.start(t); osc.stop(t + len + 0.05);
+}
+function bgmTick(){
+var a = actx;
+if(!bgmOn || !a) return;
+try{
+while(bgmNext < a.currentTime + 0.3){
+for(var i = 0; i < BGM_MEL.length; i++){
+var m = BGM_MEL[i];
+if(m[0] === bgmStep){
+bgmNote(a, m[1], bgmNext, m[2] * BGM_STEP + 0.35, 0.5, "sine");
+bgmNote(a, m[1] + 12, bgmNext, 0.25, 0.12, "sine");
+}
+}
+for(var j = 0; j < BGM_BASS.length; j++){
+if(BGM_BASS[j][0] === bgmStep) bgmNote(a, BGM_BASS[j][1], bgmNext, 4 * BGM_STEP, 0.35, "triangle");
+}
+bgmNext += BGM_STEP;
+bgmStep = (bgmStep + 1) % BGM_LEN;
+}
+}catch(e){}
+}
+function bgmStart(){
+if(bgmOn || BGM_VOL <= 0) return;
+var a = audio();
+if(!a) return;
+try{
+bgmOn = true;
+bgmGain = a.createGain();
+bgmGain.gain.setValueAtTime(0, a.currentTime);
+bgmGain.gain.linearRampToValueAtTime(BGM_VOL, a.currentTime + 1.5);
+bgmGain.connect(master(a));
+bgmNext = a.currentTime + 0.1;
+bgmStep = 0;
+bgmTick();
+bgmTimer = setInterval(bgmTick, 100);
+}catch(e){ bgmOn = false; }
+}
+function bgmStop(){
+if(!bgmOn) return;
+bgmOn = false;
+clearInterval(bgmTimer); bgmTimer = null;
+var g = bgmGain; bgmGain = null;
+try{
+var t = actx.currentTime;
+g.gain.cancelScheduledValues(t);
+g.gain.setValueAtTime(g.gain.value, t);
+g.gain.linearRampToValueAtTime(0, t + 0.4);
+setTimeout(function(){ try{ g.disconnect(); }catch(e){} }, 1500);
+}catch(e){}
+}
+// ゲーム画面で、おと オン で、お祝い中でないときだけ流す
+function bgmUpdate(){
+var want = soundOn && !document.hidden &&
+$("p-game").classList.contains("on") &&
+!$("celebrate").classList.contains("on");
+if(want) bgmStart(); else bgmStop();
+}
+document.addEventListener("visibilitychange", bgmUpdate);
 var COLS = [
 ["ア","イ","ウ","エ","オ"],
 ["カ","キ","ク","ケ","コ"],
@@ -847,6 +937,7 @@ var box = $("celebrate");
 box.innerHTML = "";
 box.onclick = null;
 box.className = "on";
+bgmUpdate();
 var flash = document.createElement("div");
 flash.className = "flash";
 box.appendChild(flash);
@@ -1506,6 +1597,7 @@ var box = $("celebrate");
 box.innerHTML = "";
 box.onclick = null;
 box.className = "on";
+bgmUpdate();
 var flash = document.createElement("div");
 flash.className = "flash";
 box.appendChild(flash);
@@ -1641,6 +1733,7 @@ var box = $("celebrate");
 box.className = "";
 box.innerHTML = "";
 box.onclick = null;
+bgmUpdate();
 }
 function pick(a){ return a[Math.floor(Math.random() * a.length)]; }
 $("replay").addEventListener("click", function(){
@@ -1688,6 +1781,7 @@ locked = false;
 $("emoji").textContent = item[0];
 $("word").textContent = word;
 $("toast").textContent = "がんばって！";
+bgmUpdate();
 sayWord(word);
 drawSlots();
 drawChoices();
@@ -1848,6 +1942,7 @@ for(var j = 0; j < ps.length; j++) ps[j].classList.remove("on");
 $("p-" + name).classList.add("on");
 if(name !== "game" && nextTimer){ clearTimeout(nextTimer); nextTimer = null; }
 document.body.classList.toggle("practice", practice && name === "game");
+bgmUpdate();
 tone(880, 0, 0.12);
 if(name === "table"){
 sayLines([
