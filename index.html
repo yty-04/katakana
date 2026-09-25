@@ -934,8 +934,18 @@ $("vAll").className = "vbtn" + (big ? "" : " on");
 $("vBig").className = "vbtn" + (big ? " on" : "");
 if(big) drawBigRow();
 }
-$("vAll").addEventListener("click", function(){ setTableView(false); });
-$("vBig").addEventListener("click", function(){ setTableView(true); });
+$("vAll").addEventListener("click", function(){
+setTableView(false);
+audio();
+tone(880, 0, 0.1);
+sayLines([{ t:"ぜんぶ みてみよう", at:150, rate:0.9, pitch:1.35 }]);
+});
+$("vBig").addEventListener("click", function(){
+setTableView(true);
+audio();
+tone(880, 0, 0.1);
+sayLines([{ t:"おおきく して みよう", at:150, rate:0.9, pitch:1.35 }]);
+});
 $("prevRow").addEventListener("click", function(){ turnRow(-1); });
 $("nextRow").addEventListener("click", function(){ turnRow(1); });
 var STAMPS = [
