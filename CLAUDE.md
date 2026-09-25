@@ -1,6 +1,6 @@
 # カタカナ ひょう（子供のカタカナ学習アプリ）
 
-- 本体は `index.html` の1ファイルだけ（HTML/CSS/JavaScript。ライブラリなし）
+- 本体は `index.html` の1ファイル（HTML/CSS/JavaScript。ライブラリなし）。ほかにホーム画面用アイコン `icon-192.png` `icon-512.png` と `manifest.webmanifest`
 - 公開ページ: https://yty-04.github.io/katakana/ （GitHub Pages・main ブランチの内容がそのまま公開される）
 - 使う人: 子供（Android の Chrome でホーム画面から開く）。直す人: 保護者（スマホの Claude Code と PC の Claude Code の両方から）
 - 返答の相手は保護者（大人）。ふつうの大人向けの日本語（漢字まじり・です・ます）で書く。ひらがなばかりの子供向けの文にはしない。専門用語は避けるか、ひとこと説明を添える
@@ -8,9 +8,9 @@
 
 ## 機能（直すときに壊さないこと）
 - 📖 アイウエオ: 50音表（ぜんぶ／おおきく）。押すと読み上げ
-- 🚂 ゲーム: もんだい／れんしゅう。5問正解でお祝い（電車）→スタンプ ゲット→メニュー
+- 🚂 ゲーム: もんだい／れんしゅう。5問正解でお祝い（電車）→スタンプ ゲット→メニュー。ゲーム中はオルゴール風 BGM（手作り・お祝い中は止まる）、🎚️ で こえ／おんがく の音量調整
 - 🎫 スタンプ: 20個でカード完成（15%でキラキラ）。印刷・画像保存・引っ越しコード（KTKN1:）・おとなのひと用の おす／へらす／けす
-- 記録はブラウザの localStorage（katakana_stamps / katakana_cards / katakana_slots）。**キー名とコード形式は変えない**（子供の記録が消える）
+- 記録はブラウザの localStorage（katakana_stamps / katakana_cards / katakana_slots、音量は katakana_volume）。**キー名とコード形式は変えない**（子供の記録が消える）
 
 ## 声
 - speechSynthesis を使用。`voiceScore()` で自然な声を優先（Natural/Nanami > Google > Kyoko拡張 > その他 > 旧Microsoft）
