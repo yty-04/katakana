@@ -1059,9 +1059,9 @@ if(isRare){
 tone(f, 1.0 + i * 0.12, 0.25);
 });
 sayLines([
-{ t:"やったー",              at:1500, rate:1.1,  pitch:1.9 },
-{ t:"キラキラカードだ",      at:2200, rate:0.8,  pitch:1.8 },
-{ t:"すごーい",              at:3400, rate:0.55, pitch:1.7 }
+{ t:"わあ〜、すごい！",        at:1500, rate:0.95, pitch:1.45 },
+{ t:"キラキラカードだよ",      at:2300, rate:0.85, pitch:1.4 },
+{ t:"よかったね〜",            at:3500, rate:0.75, pitch:1.35 }
 ], function(){
 setTimeout(function(){
 box.className = "";
@@ -1071,9 +1071,9 @@ if(after) after();
 });
 } else {
 sayLines([
-{ t:"やったー",                at:1500, rate:1.1,  pitch:1.9 },
-{ t:"カード " + n + "まいめ",  at:2150, rate:0.85, pitch:1.7 },
-{ t:"かんせーい",              at:3100, rate:0.6,  pitch:1.6 }
+{ t:"やったね〜！",                at:1500, rate:0.95, pitch:1.45 },
+{ t:"カード " + n + "まいめ",      at:2250, rate:0.85, pitch:1.4 },
+{ t:"かんせい、おめでとう",        at:3200, rate:0.8,  pitch:1.35 }
 ], function(){
 setTimeout(function(){
 box.className = "";
@@ -1716,11 +1716,11 @@ fanfare(0);
 whistle(5.6);
 clack(6.0);
 sayLines([
-{ t:"わあっ",              at:2400, rate:1.15, pitch:1.9 },
-{ t:pick(PRAISE),          at:2900, rate:0.95, pitch:1.8 },
-{ t:"ごもん せいかい",      at:3750, rate:1.0,  pitch:1.5 },
-{ t:t.name + "、",         at:4600, rate:0.8,  pitch:1.0 },
-{ t:"しゅっぱあぁーーつ",   at:5150, rate:0.55, pitch:1.45 }
+{ t:"わあ〜！",            at:2400, rate:1.0,  pitch:1.45 },
+{ t:pick(PRAISE),          at:2900, rate:0.95, pitch:1.4 },
+{ t:"ごもん、できたね",     at:3750, rate:0.95, pitch:1.35 },
+{ t:t.name + "、",         at:4600, rate:0.8,  pitch:1.2 },
+{ t:"しゅっぱあぁーーつ",   at:5150, rate:0.6,  pitch:1.4 }
 ]);
 setTimeout(function(){
 bangStamps(t);
@@ -1758,7 +1758,7 @@ if(soundOn) tone(880 + i * 110, 0.05, 0.16);
 });
 setTimeout(function(){
 sayLines(
-[{ t:"スタンプ、ごこ ゲット", at:0, rate:0.9, pitch:1.7 }],
+[{ t:"スタンプ、ごこ ゲットだね", at:0, rate:0.9, pitch:1.4 }],
 function(){
 setTimeout(function(){
 if(cardDone){
@@ -1781,7 +1781,7 @@ var card = document.createElement("div");
 card.className = "menucard";
 var title = document.createElement("div");
 title.className = "menutitle";
-title.textContent = t.emoji + " 5もん せいかい！";
+title.textContent = t.emoji + " 5もん できたね！";
 card.appendChild(title);
 var sub = document.createElement("div");
 sub.className = "menusub";
@@ -1789,7 +1789,7 @@ sub.textContent = "スタンプ " + stampCount + "こ ためたよ！";
 card.appendChild(sub);
 var again = document.createElement("button");
 again.className = "menubtn go";
-again.textContent = "▶ もういちど する";
+again.textContent = "▶ もういちど あそぶ";
 again.addEventListener("click", function(){
 closeMenu();
 next();
@@ -1841,8 +1841,8 @@ if(f) f();
 function scheduleNext(ms){
 scheduleAfter(next, ms);
 }
-var PRAISE = ["おめでとう", "すごい", "じょうず", "やったね", "できたね", "はなまる"];
-var MIDCHEER = ["その ちょうし！", "いいね！", "じょうず！", "つぎも いけるよ！", "あたり！"];
+var PRAISE = ["すごいね〜", "じょうずだね〜", "やったね〜", "よく できたね", "はなまるだよ", "がんばったね"];
+var MIDCHEER = ["その ちょうし！", "いいね いいね！", "じょうず じょうず！", "つぎも できるかな？", "あたり！ すごいね"];
 function maxLen(){
 if(stampCount < 10) return 2;
 if(stampCount < 30) return 3;
@@ -1877,7 +1877,7 @@ misses = 0;
 locked = false;
 $("emoji").textContent = item[0];
 $("word").textContent = word;
-$("toast").textContent = "がんばって！";
+$("toast").textContent = "ゆっくりで いいよ";
 bgmUpdate();
 sayWord(word);
 drawSlots();
@@ -1895,11 +1895,11 @@ else { s.textContent = ""; }
 box.appendChild(s);
 }
 if(step >= word.length){
-$("prompt").innerHTML = '<span class="findtxt">できた！</span>';
+$("prompt").innerHTML = '<span class="findtxt">できたね！</span>';
 } else if(practice || misses >= 1){
-$("prompt").innerHTML = '<span class="find">' + word.charAt(step) + '</span><span class="findtxt">を さがそう</span>';
+$("prompt").innerHTML = '<span class="find">' + word.charAt(step) + '</span><span class="findtxt">を さがしてね</span>';
 } else {
-$("prompt").innerHTML = '<span class="findtxt">ここに はいる じ は どれ？</span>';
+$("prompt").innerHTML = '<span class="findtxt">ここに はいる じ、どれかな？</span>';
 }
 }
 var LOOKALIKE = {
@@ -1970,7 +1970,7 @@ $("score").textContent = score;
 drawStreak();
 var got = addStamp();
 recent.push(got);
-$("toast").textContent = "せいかい！ " + got.n + " ゲット！";
+$("toast").textContent = "せいかい！ " + got.n + " ゲットだね！";
 stampPop(got);
 vehicleSound(got.s, 0.15);
 if(streak >= 5){
@@ -1995,8 +1995,8 @@ buzz();
 misses++;
 btn.classList.add("used");
 btn.disabled = true;
-$("toast").textContent = practice ? "ひかって いる ところだよ！"
-: ((misses >= 2) ? "これだよ！" : "ヒント だすね！");
+$("toast").textContent = practice ? "ひかってる じを おしてみてね"
+: ((misses >= 2) ? "ここだよ、おしてみてね" : "だいじょうぶ、ヒント だすね");
 say(READ[k] || k, 780);
 drawSlots();
 if(misses >= 2) glowAnswer(answer);
@@ -2023,7 +2023,7 @@ audio();
 tone(880, 0, 0.12);
 var pending = afterFn;
 sayLines(
-[{ t: p ? "れんしゅう モード" : "もんだい モード", at:150, rate:0.9, pitch:1.6 }],
+[{ t: p ? "れんしゅう しようね" : "もんだい、やってみよう", at:150, rate:0.9, pitch:1.35 }],
 function(){
 if(pending) scheduleAfter(pending, 350);
 else scheduleNext(350);
@@ -2048,13 +2048,13 @@ wakeUpdate();
 tone(880, 0, 0.12);
 if(name === "table"){
 sayLines([
-{ t:"アイウエオ ひょう", at:180, rate:0.85, pitch:1.5 }
+{ t:"アイウエオ ひょう だよ", at:180, rate:0.85, pitch:1.35 }
 ]);
 } else if(name === "book"){
 drawStamps(-1);
 drawCards();
 sayLines([
-{ t:"スタンプちょう。いま " + stampCount + "こ", at:180, rate:0.85, pitch:1.5 }
+{ t:"スタンプちょう だよ。いま " + stampCount + "こ あつめたね", at:180, rate:0.85, pitch:1.35 }
 ]);
 } else {
 var fresh = (!word || step >= word.length);
@@ -2065,7 +2065,7 @@ else if(nextTimer) then = null;
 else if(fresh) then = function(){ scheduleNext(350); };
 else then = function(){ sayWord(word, 150); };
 sayLines(
-[{ t:"ゲーム、スタート", at:180, rate:0.9, pitch:1.6 }],
+[{ t:"さあ、ゲーム はじめよう", at:180, rate:0.9, pitch:1.4 }],
 then
 );
 }
