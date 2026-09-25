@@ -1092,7 +1092,8 @@ $("bookNext").innerHTML = '<span class="bignext">🎉</span><br>' + cards[page].
 $("bookNext").innerHTML = (left === 0)
 ? '<span class="bignext">🎉</span><br>カード ぜんぶ うまった！'
 : '<span class="bignext">' + stampHTML(slotStamp(filled)) + '</span><br>' +
-'<span class="nxline"><span class="nxname">' + slotStamp(filled).n + '</span> まで <span class="nxato">あと</span> <span class="nxnum">' + left + '</span>こ</span>';
+'<span class="nxline"><span class="nxname">' + slotStamp(filled).n + '</span> まで</span><br>' +
+'<span class="nxline"><span class="nxato">あと</span> <span class="nxnum">' + left + '</span>こ</span>';
 }
 }
 function turnPage(d){
