@@ -375,6 +375,31 @@ tone(659.3, d + 0.16, 0.18);
 tone(784.0, d + 0.32, 0.18);
 tone(1046.5, d + 0.48, 0.75);
 }
+// パソコンの Chrome で声が途切れないようにする読み上げ
+// ・読み上げ中の言葉を配列に持っておく（途中で片付けられて声が切れるのを防ぐ）
+// ・止めた直後に次を読むと出だしが欠けるので、少し間をあける
+var liveUtter = [];
+function speechBusy(){
+try{ var ss = window.speechSynthesis; return !!(ss.speaking || ss.pending); }catch(e){ return false; }
+}
+function stopSpeech(){
+var busy = speechBusy();
+if(busy){ try{ window.speechSynthesis.cancel(); }catch(e){} }
+return busy;
+}
+function speakU(u){
+var ss = window.speechSynthesis;
+liveUtter.push(u);
+while(liveUtter.length > 20) liveUtter.shift();
+var drop = function(){
+var i = liveUtter.indexOf(u);
+if(i >= 0) liveUtter.splice(i, 1);
+};
+u.addEventListener("end", drop);
+u.addEventListener("error", drop);
+try{ if(ss.paused) ss.resume(); }catch(e){}
+ss.speak(u);
+}
 var sayGen = 0;
 function sayLines(lines, done){
 var gen = ++sayGen;
@@ -391,7 +416,7 @@ if(gen === sayGen) done();
 }, end * 1000 + 250);
 return;
 }
-try{ window.speechSynthesis.cancel(); }catch(e){}
+var gap = stopSpeech() ? 80 : 0;
 var last = 0;
 lines.forEach(function(L){ if(L.at > last) last = L.at; });
 lines.forEach(function(L){
@@ -416,10 +441,10 @@ var d = done; done = null; d();
 u.onend = fire;
 setTimeout(fire, 4000);
 }
-window.speechSynthesis.speak(u);
+speakU(u);
 }catch(e){ if(done && gen === sayGen) done(); }
 });
-}, L.at);
+}, L.at + gap);
 });
 }
 function thud(delay){
@@ -555,7 +580,7 @@ var go = function(){
 whenVoiceReady(function(){
 if(!soundOn) return;
 try{
-window.speechSynthesis.cancel();
+var busy = stopSpeech();
 var u = new SpeechSynthesisUtterance(text);
 u.lang = "ja-JP";
 if(jaVoice) u.voice = jaVoice;
@@ -563,7 +588,8 @@ u.rate = rate || 0.8;
 u.pitch = 1.2;
 u.volume = VOLUME;
 u.onstart = markSpeechWorked;
-window.speechSynthesis.speak(u);
+if(busy) setTimeout(function(){ try{ speakU(u); }catch(e){} }, 80);
+else speakU(u);
 setTimeout(warnNoVoice, 1500);
 }catch(e){ warnNoVoice(); }
 });
