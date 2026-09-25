@@ -1405,12 +1405,13 @@ var today = dayKey(now), count = 0;
 for(var dd = 1; dd <= last; dd++){
 var k = dayKey(new Date(y, m, dd));
 var isToday = (k === today);
-var c = document.createElement(isToday ? "button" : "div");
+var canStick = isToday && !!days[k];
+var c = document.createElement(canStick ? "button" : "div");
 c.className = "calday" + (days[k] || stickers[k] ? " done" : "") + (stickers[k] ? " stk" : "") +
-(isToday ? " today" : "") + (isToday && !stickers[k] ? " tapme" : "") + (k === freshSticker ? " fresh" : "");
+(isToday ? " today" : "") + (canStick && !stickers[k] ? " tapme" : "") + (k === freshSticker ? " fresh" : "");
 c.innerHTML = (stickers[k] ? '<span class="cs">' + stickers[k] + '</span>' : days[k] ? '<span class="cs">🌟</span>' : "") + dd;
 if(days[k] || stickers[k]) count++;
-if(isToday){
+if(canStick){
 c.setAttribute("aria-label", "きょうの シールを はる");
 c.addEventListener("click", pickSticker);
 }
@@ -1418,8 +1419,11 @@ box.appendChild(c);
 }
 $("calNote").innerHTML = count
 ? ((calOffset === 0 ? "こんげつは " : "この つきは ") + '<span class="bignext">' + count + '</span>にち がんばったね！')
-: (calOffset === 0 ? "1もん できたら 🌟が つくよ！" : "この つきは まだ 🌟が ないよ");
-if(calOffset === 0 && !stickers[today]) $("calNote").innerHTML += "<br>👆 きょうの ところを おして シールを はろう！";
+: (calOffset === 0 ? "1もん できたら シールが はれるよ！" : "この つきは まだ 🌟が ないよ");
+if(calOffset === 0 && !stickers[today]){
+if(days[today]) $("calNote").innerHTML += "<br>👆 きょうの ところを おして シールを はろう！";
+else if(count) $("calNote").innerHTML += "<br>きょうも 1もん できたら シールが はれるよ";
+}
 freshSticker = "";
 }
 $("calPrev").addEventListener("click", function(){ calOffset--; audio(); tone(880, 0, 0.1); drawCalendar(); });
