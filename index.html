@@ -1345,9 +1345,10 @@ freshSticker = k;
 closeMenu();
 drawCalendar();
 audio();
-thud(0);
-tone(1318.5, 0.08, 0.2);
-sayLines([{ t:"シール はったよ！ やったね", at:200, rate:0.95, pitch:1.4 }]);
+popSound();
+if(soundOn){ tone(1568, 0.18, 0.12); tone(2093, 0.28, 0.2); }
+sayLines([{ t:"ポン！ シール はったよ！ やったね", at:350, rate:0.95, pitch:1.4 }]);
+if(stickerFlow) setTimeout(backToGame, 3200);
 });
 grid.appendChild(b);
 });
@@ -1355,10 +1356,10 @@ wrap.appendChild(grid);
 var close = document.createElement("button");
 close.className = "menubtn";
 close.textContent = "やめる";
-close.addEventListener("click", closeMenu);
+close.addEventListener("click", function(){ closeMenu(); backToGame(); });
 wrap.appendChild(close);
 box.appendChild(wrap);
-box.onclick = function(ev){ if(ev.target === box) closeMenu(); };
+box.onclick = function(ev){ if(ev.target === box){ closeMenu(); backToGame(); } };
 audio();
 tone(880, 0, 0.12);
 sayLines([{ t:"どの シールを はる？", at:150, rate:0.9, pitch:1.4 }]);
@@ -1370,6 +1371,41 @@ function markToday(){
 var k = dayKey(new Date());
 days[k] = (days[k] || 0) + 1;
 try{ localStorage.setItem(PK("katakana_days"), JSON.stringify(days)); }catch(e){}
+return days[k];
+}
+// その日の1問めができたら、カレンダーへ行ってシールを貼り、貼ったらゲームに戻る
+var stickerFlow = false;
+function stickerTime(fn){
+afterFn = fn;
+stickerFlow = true;
+goTab("book", true);
+setTimeout(function(){
+try{ $("calWrap").scrollIntoView({ behavior:"smooth", block:"center" }); }catch(e){}
+}, 150);
+sayLines([{ t:"きょうの シールを はろう！ ひかってる ところを おしてね", at:300, rate:0.9, pitch:1.4 }]);
+}
+function backToGame(){
+if(!stickerFlow) return;
+stickerFlow = false;
+goTab("game");
+}
+// シールを貼るときの「ポン！」
+function popSound(){
+if(!soundOn) return;
+var a = audio();
+if(!a) return;
+try{
+var t = a.currentTime;
+var o = a.createOscillator(), g = a.createGain();
+o.type = "sine";
+o.frequency.setValueAtTime(260, t);
+o.frequency.exponentialRampToValueAtTime(950, t + 0.07);
+g.gain.setValueAtTime(0.0001, t);
+g.gain.exponentialRampToValueAtTime(0.55, t + 0.01);
+g.gain.exponentialRampToValueAtTime(0.0001, t + 0.17);
+o.connect(g); g.connect(master(a));
+o.start(t); o.stop(t + 0.2);
+}catch(e){}
 }
 function dayStreak(){
 var d = new Date();
@@ -2474,13 +2510,16 @@ drawSlots();
 if(step >= word.length){
 say(READ[k] || k);
 dingdongTwice(0.75);
-markToday();
+var stickerNow = (markToday() === 1) && !stickers[dayKey(new Date())];
+var afterWord = function(fn){
+scheduleAfter(stickerNow ? function(){ stickerTime(fn); } : fn, afterWordWait());
+};
 var bs = $("choices").children;
 for(var i = 0; i < bs.length; i++) bs[i].disabled = true;
 sayWord(word, 2600);
 if(practice){
 $("toast").textContent = "よく できました！ 🎉";
-scheduleNext(afterWordWait());
+afterWord(next);
 } else {
 score++;
 streak++;
@@ -2497,14 +2536,14 @@ roundHist.push({ t: Date.now(), m: roundMiss, l: curLevel() });
 while(roundHist.length > 100) roundHist.shift();
 roundMiss = 0;
 saveStats();
-scheduleAfter(function(){ drawStreak(); celebrate(); }, afterWordWait());
+afterWord(function(){ drawStreak(); celebrate(); });
 } else if(cardDone){
 var cn = cardDone; cardDone = 0;
-scheduleAfter(function(){
+afterWord(function(){
 cardCelebrate(cn, function(){ next(); });
-}, afterWordWait());
+});
 } else {
-scheduleNext(afterWordWait());
+afterWord(next);
 }
 }
 } else {
@@ -2568,7 +2607,8 @@ else scheduleNext(350);
 }
 $("modeQuiz").addEventListener("click", function(){ setMode(false); });
 $("modePractice").addEventListener("click", function(){ setMode(true); });
-function goTab(name){
+function goTab(name, quiet){
+if(name === "game") stickerFlow = false;
 audio();
 var ts = document.querySelectorAll(".tab");
 for(var j = 0; j < ts.length; j++){
@@ -2591,7 +2631,7 @@ drawStamps(-1);
 drawCards();
 calOffset = 0;
 drawCalendar();
-sayLines([
+if(!quiet) sayLines([
 { t:"スタンプちょう だよ。いま " + stampCount + "こ あつめたね", at:180, rate:0.85, pitch:1.35 }
 ]);
 } else {
